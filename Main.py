@@ -76,7 +76,12 @@ def make_table(column,root):
     # dot.edge('A', 'B', label='001XX')
     # print(dot.source)
 
-
+    Label(text='Initial State : ', width=10).grid(row=rows.__len__(), column=0)
+    initial_state = Entry(relief=RIDGE, width=5)
+    initial_state.grid(row=rows.__len__(), column=1)
+    Label(text='Final States : ',width=10).grid(row=rows.__len__()+1,column=0)
+    final_states = Entry(relief=RIDGE, width=5)
+    final_states.grid(row=rows.__len__()+1,column=1)
     Button(text='Fetch', command=onPress).grid()
     mainloop()
 

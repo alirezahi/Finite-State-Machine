@@ -1,9 +1,6 @@
 // The Round Table
 digraph {
 	0 [label=0]
-		0 -> 1 [label=b]
 	1 [label=1]
-		1 -> 2 [label=d]
 	2 [label=2]
-		2 -> 0 [label=t]
 }
