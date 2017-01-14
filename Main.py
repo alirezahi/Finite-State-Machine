@@ -3,6 +3,7 @@ from Tree import AVL
 from graphviz import Digraph
 
 def make_table(column,root):
+    o =0
     root.destroy()
     table_trees = []
     rows = []
@@ -27,6 +28,25 @@ def make_table(column,root):
         rows.append(cols)
     dot = Digraph(comment='The Round Table')
 
+    def new_graph():
+        global dot
+        dot = Digraph(comment='The Round Table')
+        w=0
+        for row in rows[1:]:
+            dot.node(w.__str__(), row[0].get())
+            row_trees=[]
+            z=0
+            for col in row[1:]:
+                new_tree = AVL()
+                for entry in col.get().split(','):
+                    if not entry=='' and not entry=='-':
+                        dot.edge(w.__str__(), z.__str__(), label=entry)
+                        new_tree.add(entry.strip())
+                row_trees.append(new_tree)
+                z = z + 1
+            table_trees.append(row_trees)
+            w = w+1
+        dot.render('test-output/round-table.gv',view=True)
     def check_string(inputString,label):
         global current_states
         current_states = []
@@ -66,12 +86,14 @@ def make_table(column,root):
                 z = z + 1
             table_trees.append(row_trees)
             w = w+1
-        dot.render('test-output/round-table.gv', view=True)
+        dot.render('test-output/round-table.gv',view=True)
+
         def DFS(node=0):
             visited[node]=1
             z=0
             for i in table_trees[node]:
                 if i.root:
+                    print(i.root.word)
                     if visited[z]==1:
                         return True
                     elif visited[z] != 2:
@@ -79,8 +101,32 @@ def make_table(column,root):
                             return True
                 z = z+1
             visited[node] = 2
+            for i in range(visited.__len__()):
+                visited[i] = 0
+
+        # DFS()
+
+        def cycle_DFS(node=0):
+            visited[node] = 1
+            z = 0
+            for i in table_trees[node]:
+                if i.root:
+                    print(i.root.word + ' dsaf')
+                    if visited[z] == 1:
+                        print(z)
+                        print(table_trees[node][z].root.word)
+                        table_trees[node][z] = AVL()
+                    elif visited[z] != 2:
+                        cycle_DFS(node=z)
+                z = z + 1
+            visited[node] = 2
+
         for final_state in final_states.get().split(','):
             f_states_list.append(final_state)
+
+        cycle_DFS()
+        DFS()
+
 
 
     Label(text='Initial State : ', width=10).grid(row=rows.__len__(), column=0)
@@ -90,6 +136,7 @@ def make_table(column,root):
     final_states = Entry(relief=RIDGE, width=5)
     final_states.grid(row=rows.__len__()+1,column=1)
     Button(text='Make Graph', command=onPress).grid(row=rows.__len__()+2)
+    # Button(text='Show', command=show).grid(row=rows.__len__() + 2, column=1)
     string_checking = Entry(width=5)
     string_checking.grid(row=rows.__len__()+3,column=1)
     string_result = Label(text='Result',width=5)
@@ -106,10 +153,6 @@ if __name__ == '__main__':
     coulmn_num = Entry(frame, width=5)
     coulmn_num.pack(side="left")
     frame1 = Frame(root)
-    labelDir1 = Label(frame1, text='Set States Automatically')
-    labelDir1.pack(side="right")
-    automate_state = Checkbutton(frame1)
-    automate_state.pack(side="right")
     frame1.pack()
     MakeTableButton =Button(root, text="Make Table", command = lambda : make_table(int(coulmn_num.get())+1, root))
     MakeTableButton.pack()
