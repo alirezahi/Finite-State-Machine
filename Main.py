@@ -84,6 +84,19 @@ def make_table(column,root):
             z = z + 1
         visited[node] = 2
 
+    def cycle_DFS(node, j=[]):
+        visited[node] = 1
+        z = 0
+        for i in table_trees[node]:
+            if i.root:
+                if visited[z] == 1:
+                    table_trees[node][z].root = None
+                elif visited[z] == 0:
+                    print(node.__str__() + ' ' + z.__str__() + ' statessssss', j)
+                    j.append([node, z])
+                    cycle_DFS(node=z, j=j)
+            z = z + 1
+        visited[node] = 2
     def onPress():
         global current_state
         current_state = int(initial_state.get())
@@ -123,19 +136,7 @@ def make_table(column,root):
                 visited[i] = 0
 
 
-        def cycle_DFS(node=int(initial_state.get()),j=[]):
-            visited[node] = 1
-            z = 0
-            for i in table_trees[node]:
-                if i.root:
-                    if visited[z] == 1:
-                        table_trees[node][z].root = None
-                    elif visited[z] == 0:
-                        print(node.__str__() + ' '+z.__str__() + ' statessssss' , j )
-                        j.append([node , z])
-                        cycle_DFS(node=z,j=j)
-                z = z + 1
-            visited[node] = 2
+
 
         for final_state in final_states.get().split(','):
             f_states_list.append(final_state)
@@ -151,6 +152,10 @@ def make_table(column,root):
             label.config(text='True')
         else:
             label.config(text='False')
+    def cycle_remove(initial):
+        cycle_DFS(node = initial)
+        new_graph()
+
 
     Label(text='Initial State : ', width=10).grid(row=rows.__len__(), column=0)
     initial_state = Entry(relief=RIDGE, width=5)
@@ -161,7 +166,7 @@ def make_table(column,root):
     Button(text='Make Graph', command=onPress).grid(row=rows.__len__()+2,column=0)
     cycle = Label(text='cycle')
     Button(text='Cycle', command=lambda : check_dfs(cycle,int(initial_state.get()))).grid(row=rows.__len__()+2,column=1)
-    Button(text='unDFS', command=onPress).grid(row=rows.__len__()+2,column=2)
+    Button(text='unDFS', command=lambda : cycle_remove(int(initial_state.get()))).grid(row=rows.__len__()+2,column=2)
     cycle.grid(row=rows.__len__()+2,column=3)
     # Button(text='Show', command=show).grid(row=rows.__len__() + 2, column=1)
     string_checking = Entry(width=5)
