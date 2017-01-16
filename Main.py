@@ -7,6 +7,7 @@ def make_table(column,root):
     root.destroy()
     table_trees = []
     rows = []
+    beginning_state = None
     f_states_list = []
     current_state = 0
     current_states = []
@@ -15,7 +16,6 @@ def make_table(column,root):
         for j in range(column):
             e = Entry(relief=RIDGE, width=5)
             e.grid(row=i, column=j, sticky=NSEW)
-            # e.insert(END, '%d.%d' % (i, j))
             if i == j and i == 0:
                 e.delete(0, END)
                 e.insert(END, 'States')
@@ -45,9 +45,12 @@ def make_table(column,root):
                 z = z + 1
             w = w+1
         dot.render('test-output/round-table.gv', view=True)
+
     def check_string(inputString,label):
         global current_states
         current_states = []
+        current_state = int(initial_state.get())
+        print(current_state.__str__() + ' cur_state')
         current_states.append(current_state)
         for i in inputString:
             new_current_states = []
@@ -65,7 +68,25 @@ def make_table(column,root):
         label.config(text='False')
         return False
 
+    visited = [0] * (rows.__len__() - 1)
+    def DFS(node):
+        visited[node] = 1
+        z = 0
+        for i in table_trees[node]:
+            if i.root:
+                if visited[z] == 1:
+                    print('true')
+                    return True
+                elif visited[z] != 2:
+                    if DFS(z):
+                        print('true')
+                        return True
+            z = z + 1
+        visited[node] = 2
+
     def onPress():
+        global current_state
+        current_state = int(initial_state.get())
         global dot
         dot = Digraph(comment='The Round Table')
         w=0
@@ -84,8 +105,7 @@ def make_table(column,root):
             table_trees.append(row_trees)
             w = w+1
         dot.render('test-output/round-table.gv',view=True)
-
-        def DFS(node=0):
+        def DFS(node=int(initial_state.get())):
             visited[node]=1
             z=0
             for i in table_trees[node]:
@@ -103,7 +123,7 @@ def make_table(column,root):
                 visited[i] = 0
 
 
-        def cycle_DFS(node=0,j=[]):
+        def cycle_DFS(node=int(initial_state.get()),j=[]):
             visited[node] = 1
             z = 0
             for i in table_trees[node]:
@@ -120,13 +140,17 @@ def make_table(column,root):
         for final_state in final_states.get().split(','):
             f_states_list.append(final_state)
 
-        cycle_DFS()
-        make_initial_visited()
-        new_graph()
-        DFS()
-        make_initial_visited()
+        # cycle_DFS()
+        # make_initial_visited()
+        # new_graph()
+        # DFS()
+        # make_initial_visited()
 
-
+    def check_dfs(label , initial):
+        if DFS(node=initial):
+            label.config(text='True')
+        else:
+            label.config(text='False')
 
     Label(text='Initial State : ', width=10).grid(row=rows.__len__(), column=0)
     initial_state = Entry(relief=RIDGE, width=5)
@@ -134,7 +158,11 @@ def make_table(column,root):
     Label(text='Final States : ',width=10).grid(row=rows.__len__()+1,column=0)
     final_states = Entry(relief=RIDGE, width=5)
     final_states.grid(row=rows.__len__()+1,column=1)
-    Button(text='Make Graph', command=onPress).grid(row=rows.__len__()+2)
+    Button(text='Make Graph', command=onPress).grid(row=rows.__len__()+2,column=0)
+    cycle = Label(text='cycle')
+    Button(text='Cycle', command=lambda : check_dfs(cycle,int(initial_state.get()))).grid(row=rows.__len__()+2,column=1)
+    Button(text='unDFS', command=onPress).grid(row=rows.__len__()+2,column=2)
+    cycle.grid(row=rows.__len__()+2,column=3)
     # Button(text='Show', command=show).grid(row=rows.__len__() + 2, column=1)
     string_checking = Entry(width=5)
     string_checking.grid(row=rows.__len__()+3,column=1)
