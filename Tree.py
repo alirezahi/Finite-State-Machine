@@ -326,7 +326,8 @@ class AVL():
             list_of_nodes = self.traverse(node=node.leftChild, list_of_nodes=list_of_nodes)
         if node.rightChild != None:
             list_of_nodes = self.traverse(node=node.rightChild, list_of_nodes=list_of_nodes)
-        return list_of_nodes.append(node)
+        list_of_nodes.append(node)
+        return list_of_nodes
 
     def traverse_words_documents(self, node=None,sentence=''):
         if node == None:

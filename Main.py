@@ -32,21 +32,19 @@ def make_table(column,root):
         global dot
         dot = Digraph(comment='The Round Table')
         w=0
-        for row in rows[1:]:
-            dot.node(w.__str__(), row[0].get())
-            row_trees=[]
-            z=0
-            for col in row[1:]:
-                new_tree = AVL()
-                for entry in col.get().split(','):
-                    if not entry=='' and not entry=='-':
-                        dot.edge(w.__str__(), z.__str__(), label=entry)
-                        new_tree.add(entry.strip())
-                row_trees.append(new_tree)
+        for row in table_trees:
+            dot.node(w.__str__(), w.__str__(),shape = 'doublecircle')
+            z = 0
+            for vertix in row:
+                def draw_ver(node_to_draw):
+                    if node_to_draw:
+                        dot.edge(w.__str__(), z.__str__(), label=node_to_draw.word)
+                        draw_ver(node_to_draw.leftChild)
+                        draw_ver(node_to_draw.rightChild)
+                draw_ver(vertix.root)
                 z = z + 1
-            table_trees.append(row_trees)
             w = w+1
-        dot.render('test-output/round-table.gv',view=True)
+        dot.render('test-output/round-table.gv', view=True)
     def check_string(inputString,label):
         global current_states
         current_states = []
@@ -77,12 +75,11 @@ def make_table(column,root):
             row_trees=[]
             z=0
             for col in row[1:]:
-                new_tree = AVL()
+                row_trees.append(AVL())
                 for entry in col.get().split(','):
                     if not entry=='' and not entry=='-':
                         dot.edge(w.__str__(), z.__str__(), label=entry)
-                        new_tree.add(entry.strip())
-                row_trees.append(new_tree)
+                        row_trees[-1].add(entry.strip())
                 z = z + 1
             table_trees.append(row_trees)
             w = w+1
@@ -93,7 +90,6 @@ def make_table(column,root):
             z=0
             for i in table_trees[node]:
                 if i.root:
-                    print(i.root.word)
                     if visited[z]==1:
                         return True
                     elif visited[z] != 2:
@@ -101,23 +97,23 @@ def make_table(column,root):
                             return True
                 z = z+1
             visited[node] = 2
+
+        def make_initial_visited():
             for i in range(visited.__len__()):
                 visited[i] = 0
 
-        # DFS()
 
-        def cycle_DFS(node=0):
+        def cycle_DFS(node=0,j=[]):
             visited[node] = 1
             z = 0
             for i in table_trees[node]:
                 if i.root:
-                    print(i.root.word + ' dsaf')
                     if visited[z] == 1:
-                        print(z)
-                        print(table_trees[node][z].root.word)
-                        table_trees[node][z] = AVL()
-                    elif visited[z] != 2:
-                        cycle_DFS(node=z)
+                        table_trees[node][z].root = None
+                    elif visited[z] == 0:
+                        print(node.__str__() + ' '+z.__str__() + ' statessssss' , j )
+                        j.append([node , z])
+                        cycle_DFS(node=z,j=j)
                 z = z + 1
             visited[node] = 2
 
@@ -125,7 +121,10 @@ def make_table(column,root):
             f_states_list.append(final_state)
 
         cycle_DFS()
+        make_initial_visited()
+        new_graph()
         DFS()
+        make_initial_visited()
 
 
 
