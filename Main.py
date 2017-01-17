@@ -32,7 +32,7 @@ def make_table(column,root):
         dot = Digraph(comment='The Round Table')
         w=0
         for row in table_trees:
-            dot.node(w.__str__(), w.__str__(),shape = 'doublecircle')
+            dot.node(w.__str__(), w.__str__())
             z = 0
             for vertix in row:
                 def draw_ver(node_to_draw):
