@@ -7,7 +7,6 @@ def make_table(column,root):
     root.destroy()
     table_trees = []
     rows = []
-    beginning_state = None
     f_states_list = []
     current_state = 0
     current_states = []
@@ -92,7 +91,6 @@ def make_table(column,root):
                 if visited[z] == 1:
                     table_trees[node][z].root = None
                 elif visited[z] == 0:
-                    print(node.__str__() + ' ' + z.__str__() + ' statessssss', j)
                     j.append([node, z])
                     cycle_DFS(node=z, j=j)
             z = z + 1
@@ -118,44 +116,37 @@ def make_table(column,root):
             table_trees.append(row_trees)
             w = w+1
         dot.render('test-output/round-table.gv',view=True)
-        def DFS(node=int(initial_state.get())):
-            visited[node]=1
-            z=0
-            for i in table_trees[node]:
-                if i.root:
-                    if visited[z]==1:
-                        return True
-                    elif visited[z] != 2:
-                        if DFS(z):
-                            return True
-                z = z+1
-            visited[node] = 2
 
         def make_initial_visited():
             for i in range(visited.__len__()):
                 visited[i] = 0
 
-
-
-
         for final_state in final_states.get().split(','):
             f_states_list.append(final_state)
 
-        # cycle_DFS()
-        # make_initial_visited()
-        # new_graph()
-        # DFS()
-        # make_initial_visited()
 
     def check_dfs(label , initial):
         if DFS(node=initial):
             label.config(text='True')
         else:
             label.config(text='False')
+
     def cycle_remove(initial):
         cycle_DFS(node = initial)
         new_graph()
 
+    def ADJ():
+        result_string = ''
+        for row in rows[1:]:
+            result_string = result_string + row[0].get() + ' : '
+            z = 0
+            for col in row[1:]:
+                for entry in col.get().split(','):
+                    if not entry == '' and not entry == '-':
+                        result_string = result_string + '('+ z.__str__()+' , '+entry+') '
+                z = z + 1
+            result_string = result_string + '\n'
+        print(result_string)
 
     Label(text='Initial State : ', width=10).grid(row=rows.__len__(), column=0)
     initial_state = Entry(relief=RIDGE, width=5)
@@ -165,9 +156,10 @@ def make_table(column,root):
     final_states.grid(row=rows.__len__()+1,column=1)
     Button(text='Make Graph', command=onPress).grid(row=rows.__len__()+2,column=0)
     cycle = Label(text='cycle')
-    Button(text='Cycle', command=lambda : check_dfs(cycle,int(initial_state.get()))).grid(row=rows.__len__()+2,column=1)
-    Button(text='unDFS', command=lambda : cycle_remove(int(initial_state.get()))).grid(row=rows.__len__()+2,column=2)
-    cycle.grid(row=rows.__len__()+2,column=3)
+    Button(text='Adj', command=lambda : ADJ()).grid(row=rows.__len__()+2,column=1)
+    Button(text='Cycle', command=lambda : check_dfs(cycle,int(initial_state.get()))).grid(row=rows.__len__()+2,column=2)
+    Button(text='unDFS', command=lambda : cycle_remove(int(initial_state.get()))).grid(row=rows.__len__()+2,column=3)
+    cycle.grid(row=rows.__len__()+2,column=4)
     # Button(text='Show', command=show).grid(row=rows.__len__() + 2, column=1)
     string_checking = Entry(width=5)
     string_checking.grid(row=rows.__len__()+3,column=1)
